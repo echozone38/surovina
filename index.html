@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Porce ze suroviny (Kája, Máša, Fanda, Tóňa) – PWA</title>
+  <meta name="description" content="PWA pro rozdělení suroviny F1 na porce podle podílů (Kája, Máša, Fanda, Tóňa) vůči referenci G5." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <style>
+    :root{ --bg:#0b1020; --panel:#11172a; --text:#e6edf3; --muted:#9fb3c8; --accent:#0ea5e9; --accent2:#0f766e; --danger:#ef4444; }
+    html,body{ height:100%; }
+    body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+    header{ padding:1rem 1.25rem; background:linear-gradient(90deg,var(--panel),#0d2327); border-bottom:1px solid #1f2b46; position:sticky; top:0; z-index:10; }
+    header h1{ margin:0; font-size:1.25rem; }
+    header .sub{ font-size:0.9rem; color:var(--muted); }
+    main{ max-width:920px; margin:0 auto; padding:1rem; }
+    .card{ background:var(--panel); border:1px solid #1f2b46; border-radius:10px; padding:1rem; margin:1rem 0; }
+    label{ display:block; font-size:0.95rem; margin-bottom:0.35rem; color:var(--muted); }
+    input, button{ padding:0.6rem 0.7rem; border-radius:8px; border:1px solid #31415f; background:#0d1324; color:#e6edf3; }
+    input[type="number"]{ width:100%; appearance:textfield; }
+    button{ cursor:pointer; background:linear-gradient(180deg,#0ea5e9,#0f766e); border:0; font-weight:600; }
+    button.secondary{ background:#0d1324; border:1px solid #31415f; }
+    button.danger{ background:#0d1324; border:1px solid #412c2c; color:#ffb3b3; }
+    .muted{ color:var(--muted); }
+    .spacer{ height:0.75rem; }
+    table{ width:100%; border-collapse:collapse; font-size:0.95rem; }
+    th, td{ border-bottom:1px solid #24324f; padding:0.55rem; text-align:left; }
+    thead th{ position:sticky; top:0; background:#0d1324; }
+    .right{ text-align:right; }
+    .ok{ background:#16251f; border:1px solid #285a43; color:#cde8d7; padding:0.75rem; border-radius:8px; }
+    .warn{ background:#261a1a; border:1px solid #5c2d2d; color:#ffdbdb; padding:0.75rem; border-radius:8px; }
+    footer{ padding:2rem 1rem; color:var(--muted); text-align:center; }
+    .pill{ display:inline-block; padding:0.15rem 0.45rem; border-radius:999px; background:#12233b; color:#86c5ff; font-size:0.8rem; }
+    .cells{ font-size:0.85rem; color:#86c5ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Porce ze suroviny <span class="pill">PWA</span></h1>
+    <div class="sub">Surovina = <strong>F1</strong>. Podíly: <strong>F5,G5,H5,I5</strong> → Poměry <strong>F4,G4,H4,I4</strong> = podíl/100. Porce: <strong>F3,G3,H3,I3</strong> s referencí <strong>G5</strong>.</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <label for="mixF1">Surovina (F1) – celková hmotnost [g]</label>
+      <input id="mixF1" type="number" min="0" step="0.01" placeholder="např. 1200" />
+      <div class="spacer"></div>
+      <div class="muted">Zadejte hmotnost suroviny v gramech. Výpočet probíhá automaticky při změně hodnot.</div>
+      <div class="spacer"></div>
+      <button id="resetBtn" class="danger">Vymazat vše (reset)</button>
+      <button id="exportCsv" class="secondary" style="margin-left:0.5rem">Export výsledků do CSV</button>
+    </section>
+
+    <section class="card">
+      <h2>Podíly → Poměry → Porce (referenční podíl = G5)</h2>
+      <div class="muted">Sloupce: <strong>Porce</strong> • <strong>Poměr</strong> • <strong>Podíl (%)</strong>. Výpočet porcí: F3 = F1 × F5 / G5, G3 = F1 × G5 / G5, H3 = F1 × H5 / G5, I3 = F1 × I5 / G5.</div>
+      <div class="spacer"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Osoba</th>
+            <th class="right">Porce (g) <span class="cells">(F3,G3,H3,I3)</span></th>
+            <th class="right">Poměr <span class="cells">(F4,G4,H4,I4)</span></th>
+            <th class="right">Podíl (%) <span class="cells">(F5,G5,H5,I5)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Kája</td>
+            <td class="right" id="portionK">0</td>
+            <td class="right" id="ratioK">0</td>
+            <td class="right"><input id="shareK" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
+          </tr>
+          <tr>
+            <td>Máša</td>
+            <td class="right" id="portionM">0</td>
+            <td class="right" id="ratioM">0</td>
+            <td class="right"><input id="shareM" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
+          </tr>
+          <tr>
+            <td>Fanda</td>
+            <td class="right" id="portionF">0</td>
+            <td class="right" id="ratioF">0</td>
+            <td class="right"><input id="shareF" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
+          </tr>
+          <tr>
+            <td>Tóňa</td>
+            <td class="right" id="portionT">0</td>
+            <td class="right" id="ratioT">0</td>
+            <td class="right"><input id="shareT" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="spacer"></div>
+      <div id="summaryBox" class="ok">Součet poměrů: <strong id="sumRatio">0</strong> • Součet podílů: <strong id="sumShares">0</strong>% • Součet porcí: <strong id="sumPortions">0</strong> g • Rozdíl proti F1: <strong id="delta">0</strong> g • Referenční G5: <strong id="refG5">0</strong>%</div>
+      <div class="spacer"></div>
+      <div id="warnBox" class="warn" style="display:none">Referenční podíl G5 je 0. Nastavte nenulovou hodnotu, jinak nelze počítat porce.</div>
+    </section>
+
+    <footer>
+      Instalovatelné jako PWA • Offline podpora přes Service Worker • Nastavení se ukládají do localStorage.
+    </footer>
+  </main>
+
+  <script>
+    const fmt = new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 2 });
+    const fmt4 = new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 4 });
+
+    const el = {
+      mixF1: document.getElementById('mixF1'),
+      shareK: document.getElementById('shareK'),
+      shareM: document.getElementById('shareM'),
+      shareF: document.getElementById('shareF'),
+      shareT: document.getElementById('shareT'),
+      ratioK: document.getElementById('ratioK'),
+      ratioM: document.getElementById('ratioM'),
+      ratioF: document.getElementById('ratioF'),
+      ratioT: document.getElementById('ratioT'),
+      portionK: document.getElementById('portionK'),
+      portionM: document.getElementById('portionM'),
+      portionF: document.getElementById('portionF'),
+      portionT: document.getElementById('portionT'),
+      sumRatio: document.getElementById('sumRatio'),
+      sumShares: document.getElementById('sumShares'),
+      sumPortions: document.getElementById('sumPortions'),
+      delta: document.getElementById('delta'),
+      refG5: document.getElementById('refG5'),
+      summaryBox: document.getElementById('summaryBox'),
+      warnBox: document.getElementById('warnBox'),
+      resetBtn: document.getElementById('resetBtn'),
+      exportCsv: document.getElementById('exportCsv')
+    };
+
+    const stateKey = 'pwa-surovina-porce-state-main';
+    function loadState(){ try{ const s = JSON.parse(localStorage.getItem(stateKey)||'{}'); ['mixF1','shareK','shareM','shareF','shareT'].forEach(k=>{ if(s[k]!==undefined) el[k].value = s[k]; }); }catch(e){} }
+    function saveState(){ const s = { mixF1: el.mixF1.value, shareK: el.shareK.value, shareM: el.shareM.value, shareF: el.shareF.value, shareT: el.shareT.value }; localStorage.setItem(stateKey, JSON.stringify(s)); }
+
+    function clampNonNeg(x){ x = Number(x); return isNaN(x) ? 0 : Math.max(0, x); }
+
+    function compute(){
+      const F1 = clampNonNeg(el.mixF1.value);
+      const F5 = clampNonNeg(el.shareK.value);
+      const G5 = clampNonNeg(el.shareM.value);
+      const H5 = clampNonNeg(el.shareF.value);
+      const I5 = clampNonNeg(el.shareT.value);
+
+      // Poměry
+      const F4 = F5/100, G4 = G5/100, H4 = H5/100, I4 = I5/100;
+      const sumR = F4+G4+H4+I4;
+      const sumS = F5+G5+H5+I5; // součet podílů v %
+
+      // Porce dle zadané logiky (dělení referencí G5)
+      let F3=0, G3=0, H3=0, I3=0;
+      if(G5>0){
+        F3 = F1 * F5 / G5;
+        G3 = F1 * G5 / G5; // = F1
+        H3 = F1 * H5 / G5;
+        I3 = F1 * I5 / G5;
+      }
+      const sumP = F3+G3+H3+I3;
+      const d = F1 - sumP;
+
+      // Render
+      el.ratioK.textContent = fmt4.format(F4);
+      el.ratioM.textContent = fmt4.format(G4);
+      el.ratioF.textContent = fmt4.format(H4);
+      el.ratioT.textContent = fmt4.format(I4);
+      el.portionK.textContent = fmt.format(F3);
+      el.portionM.textContent = fmt.format(G3);
+      el.portionF.textContent = fmt.format(H3);
+      el.portionT.textContent = fmt.format(I3);
+      el.sumRatio.textContent = fmt4.format(sumR);
+      el.sumShares.textContent = fmt.format(sumS);
+      el.sumPortions.textContent = fmt.format(sumP);
+      el.delta.textContent = fmt.format(d);
+      el.refG5.textContent = fmt.format(G5);
+
+      el.warnBox.style.display = (G5<=0 ? 'block' : 'none');
+      saveState();
+    }
+
+    ['input','change'].forEach(evt => {
+      el.mixF1.addEventListener(evt, compute);
+      el.shareK.addEventListener(evt, compute);
+      el.shareM.addEventListener(evt, compute);
+      el.shareF.addEventListener(evt, compute);
+      el.shareT.addEventListener(evt, compute);
+    });
+
+    el.resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(stateKey);
+      el.mixF1.value=''; el.shareK.value=''; el.shareM.value=''; el.shareF.value=''; el.shareT.value='';
+      compute();
+    });
+
+    el.exportCsv.addEventListener('click', () => {
+      // Export ve stejném pořadí jako tabulka: Porce | Poměr | Podíl
+      const rows = [
+        ['Osoba','Porce (g)','Poměr','Podíl (%)'],
+        ['Kája', el.portionK.textContent, el.ratioK.textContent, el.shareK.value||'0'],
+        ['Máša', el.portionM.textContent, el.ratioM.textContent, el.shareM.value||'0'],
+        ['Fanda', el.portionF.textContent, el.ratioF.textContent, el.shareF.value||'0'],
+        ['Tóňa', el.portionT.textContent, el.ratioT.textContent, el.shareT.value||'0'],
+      ];
+      const csv = rows.map(r => r.map(v => '"'+String(v).replace('"','\"')+'"').join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'porce_surovina.csv'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    loadState();
+    compute();
+
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+    }
+  </script>
+</body>
+</html>
