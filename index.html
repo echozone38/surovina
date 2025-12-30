@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f766e" />
-  <title>Porce ze suroviny (Kája, Máša, Fanda, Tóňa) – PWA</title>
+  <title>Surovina v porcích (Kája, Máša, Fanda, Tóňa) – PWA</title>
   <meta name="description" content="PWA pro rozdělení suroviny F1 na porce podle podílů (Kája, Máša, Fanda, Tóňa) vůči referenci G5." />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" />
@@ -38,16 +38,16 @@
 </head>
 <body>
   <header>
-    <h1>Porce ze suroviny <span class="pill">PWA</span></h1>
+    <h1>Surovina v porcích <span class="pill">PWA</span></h1>
     <div class="sub">Surovina = <strong>F1</strong>. Podíly: <strong>F5,G5,H5,I5</strong> → Poměry <strong>F4,G4,H4,I4</strong> = podíl/100. Porce: <strong>F3,G3,H3,I3</strong> s referencí <strong>G5</strong>.</div>
   </header>
 
   <main>
     <section class="card">
-      <label for="mixF1">Surovina (F1) – celková hmotnost [g]</label>
+      <label for="mixF1">Surovina</label>
       <input id="mixF1" type="number" min="0" step="0.01" placeholder="např. 1200" />
       <div class="spacer"></div>
-      <div class="muted">Zadejte hmotnost suroviny v gramech. Výpočet probíhá automaticky při změně hodnot.</div>
+      <div class="muted">
       <div class="spacer"></div>
       <button id="resetBtn" class="danger">Vymazat vše (reset)</button>
       <button id="exportCsv" class="secondary" style="margin-left:0.5rem">Export výsledků do CSV</button>
@@ -55,46 +55,57 @@
 
     <section class="card">
       <h2>Podíly → Poměry → Porce (referenční podíl = G5)</h2>
-      <div class="muted">Sloupce: <strong>Porce</strong> • <strong>Poměr</strong> • <strong>Podíl (%)</strong>. Výpočet porcí: F3 = F1 × F5 / G5, G3 = F1 × G5 / G5, H3 = F1 × H5 / G5, I3 = F1 × I5 / G5.</div>
+      <div class="muted">
       <div class="spacer"></div>
       <table>
-        <thead>
-          <tr>
-            <th>Osoba</th>
-            <th class="right">Porce (g) <span class="cells">(F3,G3,H3,I3)</span></th>
-            <th class="right">Poměr <span class="cells">(F4,G4,H4,I4)</span></th>
-            <th class="right">Podíl (%) <span class="cells">(F5,G5,H5,I5)</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Kája</td>
-            <td class="right" id="portionK">0</td>
-            <td class="right" id="ratioK">0</td>
-            <td class="right"><input id="shareK" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
-          </tr>
-          <tr>
-            <td>Máša</td>
-            <td class="right" id="portionM">0</td>
-            <td class="right" id="ratioM">0</td>
-            <td class="right"><input id="shareM" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
-          </tr>
-          <tr>
-            <td>Fanda</td>
-            <td class="right" id="portionF">0</td>
-            <td class="right" id="ratioF">0</td>
-            <td class="right"><input id="shareF" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
-          </tr>
-          <tr>
-            <td>Tóňa</td>
-            <td class="right" id="portionT">0</td>
-            <td class="right" id="ratioT">0</td>
-            <td class="right"><input id="shareT" type="number" min="0" step="0.01" placeholder="např. 25" /></td>
-          </tr>
-        </tbody>
-      </table>
+<tr>
+<th>
+ Osoba
+</th>
+ <th>Porce (F3,G3,H3,I3)
+</th>
+ <th>Podíly (F5,G5,H5,I5)
+</th>
+ </tr>
+<tr>
+<td>
+ Kája
+</td>
+ <td>0
+</td>
+ <td> 
+</td>
+</tr>
+<tr>
+<td>
+ Máša
+</td>
+ <td>0
+</td>
+ <td> 
+</td>
+</tr>
+<tr>
+<td>
+ Fanda
+</td>
+ <td>0
+</td>
+ <td> 
+</td>
+</tr>
+<tr>
+<td>
+ Tóňa
+</td>
+ <td>0
+</td>
+ <td> 
+</td>
+</tr>
+</table>
       <div class="spacer"></div>
-      <div id="summaryBox" class="ok">Součet poměrů: <strong id="sumRatio">0</strong> • Součet podílů: <strong id="sumShares">0</strong>% • Součet porcí: <strong id="sumPortions">0</strong> g • Rozdíl proti F1: <strong id="delta">0</strong> g • Referenční G5: <strong id="refG5">0</strong>%</div>
+      <div id="summaryBox" class="ok">
       <div class="spacer"></div>
       <div id="warnBox" class="warn" style="display:none">Referenční podíl G5 je 0. Nastavte nenulovou hodnotu, jinak nelze počítat porce.</div>
     </section>
