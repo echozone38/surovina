@@ -24,9 +24,9 @@
   <h1>Surovina v porcích</h1>
 
   <div class="card">
-    <h2>Surovina</h2>
+    <h2>Vstupy</h2>
     <label for="F1">Surovina</label>
-    <input id="F1" type="number" min="0" step="0.1" placeholder="Celková hmotnost [g]" />
+    <input id="F1" type="number" min="0" step="0.1" />
     <label for="SUMA" style="margin-top:.75rem">Celková váha</label>
     <input id="SUMA" type="number" readonly />
     <div class="btns">
@@ -48,22 +48,22 @@
         <tr>
           <td>Kája</td>
           <td><input id="F3" type="number" readonly /></td>
-          <td><input id="F5" type="number" min="0" step="0.1" placeholder="%" /></td>
+          <td><input id="F5" type="number" min="0" step="0.1" value="100" /></td>
         </tr>
         <tr>
           <td>Máša</td>
           <td><input id="G3" type="number" readonly /></td>
-          <td><input id="G5" type="number" min="0" step="0.1" placeholder="% (referenční)" /></td>
+          <td><input id="G5" type="number" min="0" step="0.1" value="80" /></td>
         </tr>
         <tr>
           <td>Fanda</td>
           <td><input id="H3" type="number" readonly /></td>
-          <td><input id="H5" type="number" min="0" step="0.1" placeholder="%" /></td>
+          <td><input id="H5" type="number" min="0" step="0.1" value="45" /></td>
         </tr>
         <tr>
           <td>Tóňa</td>
           <td><input id="I3" type="number" readonly /></td>
-          <td><input id="I5" type="number" min="0" step="0.1" placeholder="%" /></td>
+          <td><input id="I5" type="number" min="0" step="0.1" value="35" /></td>
         </tr>
       </tbody>
     </table>
@@ -97,14 +97,19 @@
   function restore(){
     try{
       const s = JSON.parse(localStorage.getItem('porce_state')||'{}');
-      ['F1','F5','G5','H5','I5'].forEach(k=>{ if(s[k]!==undefined) el[k].value = s[k]; });
+      if(Object.keys(s).length){
+        ['F1','F5','G5','H5','I5'].forEach(k=>{ if(s[k]!==undefined) el[k].value = s[k]; });
+      }
+      // if no saved state, defaults are already in HTML values (100,80,45,35)
       recalc();
-    }catch(e){}
+    }catch(e){ recalc(); }
   }
 
   ['F1','F5','G5','H5','I5'].forEach(k=> el[k].addEventListener('input', recalc));
   document.getElementById('resetBtn').addEventListener('click', ()=>{
-    ['F1','F5','G5','H5','I5'].forEach(k=> el[k].value='');
+    ['F1'].forEach(k=> el[k].value='');
+    // restore editable defaults for shares
+    el.F5.value = 100; el.G5.value = 80; el.H5.value = 45; el.I5.value = 35;
     ['F3','G3','H3','I3','SUMA'].forEach(k=> el[k].value='');
     localStorage.removeItem('porce_state');
   });
