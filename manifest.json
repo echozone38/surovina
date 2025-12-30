@@ -1,7 +1,7 @@
 {
-  "name": "Surovina v porcích (Kája, Máša, Fanda, Tóňa)",
-  "short_name": "Porce",
-  "description": "PWA pro rozdělení suroviny F1 na porce podle podílů s referencí G5",
+  "name": "Surovina v porcích",
+  "short_name": "Surovina v porcích",
+  "description": "PWA pro rozdělení suroviny na porce podle podílů s referencí G5",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

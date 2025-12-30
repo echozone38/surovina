@@ -21,29 +21,27 @@
   </style>
 </head>
 <body>
-  <h1>Surovina v porcích (Kája, Máša, Fanda, Tóňa)</h1>
+  <h1>Surovina v porcích</h1>
 
   <div class="card">
     <h2>Surovina</h2>
     <label for="F1">Surovina</label>
     <input id="F1" type="number" min="0" step="0.1" placeholder="Celková hmotnost [g]" />
-    <label for="SUMA" style="margin-top:.75rem">Suma</label>
+    <label for="SUMA" style="margin-top:.75rem">Celková váha</label>
     <input id="SUMA" type="number" readonly />
     <div class="btns">
-      <button id="resetBtn" class="secondary">Vymazat vše (reset)</button>
-      <button id="csvBtn">Export výsledků do CSV</button>
+      <button id="resetBtn" class="secondary">Reset</button>
     </div>
   </div>
 
   <div class="card">
     <h3>Porce a podíly</h3>
-    <p>Porce: F3,G3,H3,I3 s referencí G5. Podíly: F5,G5,H5,I5.</p>
     <table>
       <thead>
         <tr>
           <th>Osoba</th>
-          <th>Porce (F3,G3,H3,I3)</th>
-          <th>Podíly (F5,G5,H5,I5)</th>
+          <th>Porce</th>
+          <th>Podíly</th>
         </tr>
       </thead>
       <tbody>
@@ -109,25 +107,6 @@
     ['F1','F5','G5','H5','I5'].forEach(k=> el[k].value='');
     ['F3','G3','H3','I3','SUMA'].forEach(k=> el[k].value='');
     localStorage.removeItem('porce_state');
-  });
-
-  document.getElementById('csvBtn').addEventListener('click', ()=>{
-    const rows = [
-      ['Osoba','Porce','Podíly'],
-      ['Kája', el.F3.value, el.F5.value],
-      ['Máša', el.G3.value, el.G5.value],
-      ['Fanda', el.H3.value, el.H5.value],
-      ['Tóňa', el.I3.value, el.I5.value],
-      ['Surovina', el.F1.value, ''],
-      ['Suma', el.SUMA.value, '']
-    ];
-    const csv = rows.map(r=>r.map(v=>`"${(v??'').toString().replace('"','"')}"`).join(',')).join('
-');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'porce.csv'; a.click();
-    URL.revokeObjectURL(url);
   });
 
   if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
